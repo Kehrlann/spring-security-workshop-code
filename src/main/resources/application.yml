@@ -1,0 +1,8 @@
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: "PLACEHOLDER"
+            client-secret: "PLACEHOLDER"

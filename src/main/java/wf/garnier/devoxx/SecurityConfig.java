@@ -23,6 +23,7 @@ public class SecurityConfig {
 					.antMatchers("/favicon.ico").permitAll()
 					.anyRequest().authenticated()
 				.and().formLogin()
+				.and().oauth2Login()
 				.and().build();
 	}
 
