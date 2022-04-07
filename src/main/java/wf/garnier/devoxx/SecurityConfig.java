@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -24,7 +25,9 @@ public class SecurityConfig {
 					.anyRequest().authenticated()
 				.and().formLogin()
 				.and().oauth2Login()
-				.and().build();
+				.and()
+					.addFilterBefore(new RobotAccountFilter(), UsernamePasswordAuthenticationFilter.class)
+				.build();
 	}
 
 	@Bean
