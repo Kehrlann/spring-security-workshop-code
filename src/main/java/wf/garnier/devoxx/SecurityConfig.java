@@ -18,7 +18,8 @@ public class SecurityConfig {
 
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		return http.authorizeRequests()
+		return http.authenticationProvider(new DanielAuthenticationProvider())
+					.authorizeRequests()
 					.antMatchers("/").permitAll()
 					.antMatchers("/error").permitAll()
 					.antMatchers("/favicon.ico").permitAll()
