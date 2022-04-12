@@ -24,6 +24,7 @@ public class SecurityConfig {
 					.antMatchers("/error").permitAll()
 					.antMatchers("/favicon.ico").permitAll()
 					.anyRequest().authenticated()
+				.and().httpBasic()
 				.and().formLogin()
 				.and().oauth2Login()
 				.and()
