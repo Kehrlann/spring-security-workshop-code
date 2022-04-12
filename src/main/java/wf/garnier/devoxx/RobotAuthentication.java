@@ -1,13 +1,33 @@
 package wf.garnier.devoxx;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.util.CollectionUtils;
 
 public class RobotAuthentication implements Authentication {
+
+	private final List<SimpleGrantedAuthority> authorities;
+	private final boolean authenticated;
+	private final String password;
+
+	private RobotAuthentication(List<SimpleGrantedAuthority> authorities, String password) {
+		this.authorities = Collections.unmodifiableList(authorities);
+		this.authenticated = !CollectionUtils.isEmpty(authorities);
+		this.password = password;
+	}
+
+	public static RobotAuthentication authenticated() {
+		return new RobotAuthentication(List.of(new SimpleGrantedAuthority("ROLE_robot")), null);
+	}
+
+	public static RobotAuthentication authenticationToken(String password) {
+		return new RobotAuthentication(Collections.emptyList(), password);
+	}
 
 	@Override
 	public Object getPrincipal() {
@@ -21,18 +41,18 @@ public class RobotAuthentication implements Authentication {
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return List.of(new SimpleGrantedAuthority("ROLE_robot"));
+		return authorities;
 	}
 
 	@Override
 	public boolean isAuthenticated() {
-		return true;
+		return authenticated;
 	}
 
 
 	@Override
-	public Object getCredentials() {
-		return null;
+	public String getCredentials() {
+		return password;
 	}
 
 	@Override
