@@ -2,9 +2,14 @@ package wf.garnier.devoxx;
 
 import java.util.Collections;
 
+import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
@@ -18,8 +23,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
 	@Bean
-	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+	SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationEventPublisher publisher) throws Exception {
 		var tempAuthenticationManager = new ProviderManager(new RobotAuthenticationProvider("beep-boop", "boop-beep"));
+		tempAuthenticationManager.setAuthenticationEventPublisher(publisher);
+
+		http.getSharedObject(AuthenticationManagerBuilder.class).authenticationEventPublisher(publisher);
 
 		// @formatter:off
 		return http.authenticationProvider(new DanielAuthenticationProvider())
@@ -42,5 +50,14 @@ public class SecurityConfig {
 		return new InMemoryUserDetailsManager(
 				new User("user", "{noop}password", Collections.emptyList())
 		);
+	}
+
+
+	@Bean
+	ApplicationListener<AuthenticationSuccessEvent> authSuccess() {
+		return event -> {
+			var auth = event.getAuthentication();
+			LoggerFactory.getLogger(SecurityConfig.class).info("LOGIN SUCCESFUL [{}] - {}", auth.getClass().getSimpleName(), auth.getName());
+		};
 	}
 }
