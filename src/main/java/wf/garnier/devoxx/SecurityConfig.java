@@ -7,7 +7,6 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationEventPublisher;
-import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -16,7 +15,6 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -24,9 +22,6 @@ public class SecurityConfig {
 
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationEventPublisher publisher) throws Exception {
-		var tempAuthenticationManager = new ProviderManager(new RobotAuthenticationProvider("beep-boop", "boop-beep"));
-		tempAuthenticationManager.setAuthenticationEventPublisher(publisher);
-
 		http.getSharedObject(AuthenticationManagerBuilder.class).authenticationEventPublisher(publisher);
 
 		// @formatter:off
@@ -39,8 +34,10 @@ public class SecurityConfig {
 				.and().httpBasic()
 				.and().formLogin()
 				.and().oauth2Login()
+				.and().apply(new RobotAccountConfigurer())
+					.password("beep-boop")
+					.password("boop-beep")
 				.and()
-					.addFilterBefore(new RobotAccountFilter(tempAuthenticationManager), UsernamePasswordAuthenticationFilter.class)
 				.build();
 		// @formatter:on
 	}
