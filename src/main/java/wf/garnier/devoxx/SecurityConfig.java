@@ -21,6 +21,7 @@ public class SecurityConfig {
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		var tempAuthenticationManager = new ProviderManager(new RobotAuthenticationProvider("beep-boop", "boop-beep"));
 
+		// @formatter:off
 		return http.authenticationProvider(new DanielAuthenticationProvider())
 					.authorizeRequests()
 					.antMatchers("/").permitAll()
@@ -33,6 +34,7 @@ public class SecurityConfig {
 				.and()
 					.addFilterBefore(new RobotAccountFilter(tempAuthenticationManager), UsernamePasswordAuthenticationFilter.class)
 				.build();
+		// @formatter:on
 	}
 
 	@Bean
