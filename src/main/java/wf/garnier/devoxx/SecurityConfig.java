@@ -13,6 +13,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.oauth2.client.oidc.authentication.OidcAuthorizationCodeAuthenticationProvider;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -34,6 +35,7 @@ public class SecurityConfig {
 				.and().httpBasic()
 				.and().formLogin()
 				.and().oauth2Login()
+					.withObjectPostProcessor(new RateLimiteAuthenticationProviderProcessor<>(OidcAuthorizationCodeAuthenticationProvider.class))
 				.and().apply(new RobotAccountConfigurer())
 					.password("beep-boop")
 					.password("boop-beep")
